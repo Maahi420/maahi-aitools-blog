@@ -2,10 +2,20 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
-import AdUnits from '../../components/AdUnits.astro';
 import { getPostBySlug, getPosts, getPostsByCategory } from '../../config/posts';
 import { siteConfig } from '../../config/siteConfig';
-import { marked } from 'marked';
+
+import SectionHero from '../../components/sections/SectionHero.astro';
+import SectionQuickFacts from '../../components/sections/SectionQuickFacts.astro';
+import SectionIntro from '../../components/sections/SectionIntro.astro';
+import SectionWhoIsFor from '../../components/sections/SectionWhoIsFor.astro';
+import SectionFeatures from '../../components/sections/SectionFeatures.astro';
+import SectionProsCons from '../../components/sections/SectionProsCons.astro';
+import SectionComparison from '../../components/sections/SectionComparison.astro';
+import SectionUseCases from '../../components/sections/SectionUseCases.astro';
+import SectionExampleOutput from '../../components/sections/SectionExampleOutput.astro';
+import SectionVerdict from '../../components/sections/SectionVerdict.astro';
+import SectionFaq from '../../components/sections/SectionFaq.astro';
 
 export async function getStaticPaths() {
   const posts = getPosts();
@@ -16,7 +26,6 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const contentHtml = marked(post.content);
 
 const relatedPosts = getPostsByCategory(post.category)
   .filter(p => p.slug !== post.slug)
@@ -32,6 +41,21 @@ const categoryColors: Record<string, string> = {
 };
 
 const categoryColor = categoryColors[post.category] || 'bg-slate-500';
+
+const sectionComponents: Record<string, any> = {
+  hero: SectionHero,
+  quickFacts: SectionQuickFacts,
+  intro: SectionIntro,
+  whoIsFor: SectionWhoIsFor,
+  whoIsNotFor: SectionWhoIsFor,
+  features: SectionFeatures,
+  prosCons: SectionProsCons,
+  comparison: SectionComparison,
+  useCases: SectionUseCases,
+  exampleOutput: SectionExampleOutput,
+  verdict: SectionVerdict,
+  faq: SectionFaq,
+};
 ---
 
 <BaseLayout
@@ -47,193 +71,68 @@ const categoryColor = categoryColors[post.category] || 'bg-slate-500';
   <Navigation />
 
   <main>
-    <article class="py-12 lg:py-16">
-      <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <header class="mb-8">
-          <div class="flex items-center gap-3 mb-4 flex-wrap">
-            <a
-              href={`/category/${post.category}`}
-              class:list={['px-3 py-1 text-sm font-medium text-white rounded-full', categoryColor]}
-            >
-              {post.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </a>
-            {post.rating && (
-              <div class="flex items-center gap-1 px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full">
-                <svg class="w-4 h-4 text-amber-500 fill-amber-500" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 9.162c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                <span class="font-semibold">{post.rating.toFixed(1)}</span>
-                <span class="text-amber-600/70">/ 5</span>
-              </div>
-            )}
-          </div>
+    {post.sections.map((section) => {
+      const Component = sectionComponents[section.type];
+      if (!Component) return null;
 
-          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
-            {post.title}
-          </h1>
-
-          {post.verdict && (
-            <p class="text-xl text-emerald-600 dark:text-emerald-400 font-medium mb-4">
-              {post.verdict}
-            </p>
-          )}
-
-          <p class="text-lg text-slate-600 dark:text-slate-400 mb-6">
-            {post.description}
-          </p>
-
-          <div class="flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-            <time datetime={post.pubDate.toISOString()}>
-              {post.pubDate.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </time>
-            {post.updatedDate && (
-              <>
-                <span>•</span>
-                <span>Updated {post.updatedDate.toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}</span>
-              </>
-            )}
-            <span>•</span>
-            <span>by {post.author}</span>
-          </div>
-        </header>
-
-        {post.image && (
-          <figure class="mb-10">
-            <img
-              src={post.image}
-              alt={post.imageAlt || post.title}
-              fetchpriority="high"
-              class="w-full rounded-2xl shadow-lg"
+      if (section.type === 'hero') {
+        return (
+          <section>
+            <Component
+              heading={section.heading}
+              subheading={section.subheading}
+              highlight={section.highlight}
             />
-            {post.imageAlt && (
-              <figcaption class="mt-3 text-sm text-slate-500 dark:text-slate-400 text-center">
-                {post.imageAlt}
-              </figcaption>
-            )}
-          </figure>
-        )}
+          </section>
+        );
+      }
 
-        <div class="grid md:grid-cols-4 gap-8 mb-10">
-          <div class="md:col-span-1">
-            <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-5 sticky top-24">
-              <h3 class="font-semibold text-slate-900 dark:text-white mb-4">Quick Info</h3>
-              
-              {post.pricing && (
-                <div class="mb-4">
-                  <span class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pricing</span>
-                  <p class="font-medium text-slate-900 dark:text-white">{post.pricing}</p>
-                </div>
-              )}
+      if (section.type === 'quickFacts') {
+        return <Component items={section.items} />;
+      }
 
-              {post.bestFor && (
-                <div class="mb-4">
-                  <span class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Best For</span>
-                  <p class="font-medium text-slate-900 dark:text-white">{post.bestFor}</p>
-                </div>
-              )}
+      if (section.type === 'intro') {
+        return <Component content={section.content} />;
+      }
 
-              {post.features && post.features.length > 0 && (
-                <div class="mb-4">
-                  <span class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Key Features</span>
-                  <ul class="mt-1 space-y-1">
-                    {post.features.slice(0, 5).map(feature => (
-                      <li class="flex items-start gap-1 text-sm text-slate-600 dark:text-slate-300">
-                        <svg class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+      if (section.type === 'whoIsFor') {
+        return <Component title={section.title} items={section.items} variant="for" />;
+      }
 
-              <a
-                href="#"
-                class="mt-4 w-full btn btn-primary justify-center"
-              >
-                Visit Website
-                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            </div>
-          </div>
+      if (section.type === 'whoIsNotFor') {
+        return <Component title={section.title} items={section.items} variant="notFor" />;
+      }
 
-          <div class="md:col-span-3">
-            <div class="prose prose-slate dark:prose-invert max-w-none">
-              <div set:html={contentHtml} />
-            </div>
+      if (section.type === 'features') {
+        return <Component title={section.title} items={section.items} />;
+      }
 
-            {post.pros && post.pros.length > 0 && (
-              <div class="mt-10 grid md:grid-cols-2 gap-6">
-                <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-6">
-                  <h3 class="font-bold text-emerald-700 dark:text-emerald-300 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Pros
-                  </h3>
-                  <ul class="space-y-2">
-                    {post.pros.map(pro => (
-                      <li class="flex items-start gap-2 text-slate-700 dark:text-slate-300">
-                        <svg class="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        {pro}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+      if (section.type === 'prosCons') {
+        return <Component pros={section.pros} cons={section.cons} />;
+      }
 
-                <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-6">
-                  <h3 class="font-bold text-red-700 dark:text-red-300 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Cons
-                  </h3>
-                  <ul class="space-y-2">
-                    {post.cons.map(con => (
-                      <li class="flex items-start gap-2 text-slate-700 dark:text-slate-300">
-                        <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        {con}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            )}
+      if (section.type === 'comparison') {
+        return <Component title={section.title} table={section.table} />;
+      }
 
-            {post.tags.length > 0 && (
-              <div class="mt-10 pt-8 border-t border-slate-200 dark:border-slate-700">
-                <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-4">Tags</h3>
-                <div class="flex flex-wrap gap-2">
-                  {post.tags.map(tag => (
-                    <a
-                      href={`/blog?tag=${tag}`}
-                      class="px-3 py-1.5 text-sm bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                      #{tag}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </article>
+      if (section.type === 'useCases') {
+        return <Component title={section.title} items={section.items} />;
+      }
+
+      if (section.type === 'exampleOutput') {
+        return <Component title={section.title} content={section.content} />;
+      }
+
+      if (section.type === 'verdict') {
+        return <Component title={section.title} content={section.content} cta={section.cta} ctaLink={section.ctaLink} />;
+      }
+
+      if (section.type === 'faq') {
+        return <Component title={section.title} items={section.items} />;
+      }
+
+      return null;
+    })}
 
     {relatedPosts.length > 0 && (
       <section class="py-12 lg:py-16 bg-slate-50 dark:bg-slate-800/50">

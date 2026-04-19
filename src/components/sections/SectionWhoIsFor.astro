@@ -1,0 +1,62 @@
+---
+interface Props {
+  title: string;
+  items: string[];
+  variant?: "for" | "notFor";
+}
+
+const { title, items, variant = "for" } = Astro.props;
+
+const colors = {
+  for: {
+    bg: "bg-emerald-50 dark:bg-emerald-900/20",
+    border: "border-emerald-200 dark:border-emerald-800",
+    icon: "text-emerald-600 dark:text-emerald-400",
+    iconBg: "bg-emerald-100 dark:bg-emerald-800",
+  },
+  notFor: {
+    bg: "bg-red-50 dark:bg-red-900/20",
+    border: "border-red-200 dark:border-red-800",
+    icon: "text-red-600 dark:text-red-400",
+    iconBg: "bg-red-100 dark:bg-red-800",
+  },
+};
+
+const colorSet = colors[variant];
+---
+
+<section class="py-10 bg-white dark:bg-slate-900">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div class:list={["rounded-2xl p-6 lg:p-8 border", colorSet.bg, colorSet.border]}>
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+        <span class:list={["w-10 h-10 rounded-xl flex items-center justify-center", colorSet.iconBg]}>
+          {variant === "for" ? (
+            <svg class:list={["w-5 h-5", colorSet.icon]} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          ) : (
+            <svg class:list={["w-5 h-5", colorSet.icon]} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          )}
+        </span>
+        {title}
+      </h3>
+
+      <ul class="grid sm:grid-cols-2 gap-3">
+        {items.map(item => (
+          <li class="flex items-center gap-3">
+            <svg class:list={["w-5 h-5 flex-shrink-0", colorSet.icon]} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {variant === "for" ? (
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              ) : (
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              )}
+            </svg>
+            <span class="text-slate-700 dark:text-slate-300">{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>

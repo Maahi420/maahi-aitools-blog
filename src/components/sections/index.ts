@@ -1,0 +1,11 @@
+export { default as SectionHero } from './SectionHero.astro';
+export { default as SectionQuickFacts } from './SectionQuickFacts.astro';
+export { default as SectionFeatures } from './SectionFeatures.astro';
+export { default as SectionProsCons } from './SectionProsCons.astro';
+export { default as SectionComparison } from './SectionComparison.astro';
+export { default as SectionFaq } from './SectionFaq.astro';
+export { default as SectionVerdict } from './SectionVerdict.astro';
+export { default as SectionWhoIsFor } from './SectionWhoIsFor.astro';
+export { default as SectionIntro } from './SectionIntro.astro';
+export { default as SectionUseCases } from './SectionUseCases.astro';
+export { default as SectionExampleOutput } from './SectionExampleOutput.astro';

@@ -1,0 +1,29 @@
+---
+interface QuickFactItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  items: QuickFactItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="py-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {items.map(item => (
+        <div class="text-center p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+          <div class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+            {item.label}
+          </div>
+          <div class="text-lg font-bold text-slate-900 dark:text-white">
+            {item.value}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

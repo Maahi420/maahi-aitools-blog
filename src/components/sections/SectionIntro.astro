@@ -1,0 +1,17 @@
+---
+interface Props {
+  content: string;
+}
+
+const { content } = Astro.props;
+---
+
+<section class="py-10 bg-white dark:bg-slate-900">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div class="prose prose-slate dark:prose-invert max-w-none">
+      <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
+        {content}
+      </p>
+    </div>
+  </div>
+</section>
