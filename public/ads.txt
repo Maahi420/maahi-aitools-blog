@@ -1,0 +1,5 @@
+# ads.txt - Replace with your Adsterra/Monetag publisher ID
+# This is a placeholder. Update with your actual ad network credentials.
+# Example (Adsterra):
+# 1234567, monetag, abc123def456
+YOUR_PUBLISHER_ID_HERE, your_ad_network_here, your_verification_code

@@ -1,0 +1,50 @@
+---
+interface Props {
+  pros: string[];
+  cons: string[];
+}
+
+const { pros, cons } = Astro.props;
+---
+
+<div class="grid md:grid-cols-2 gap-6 my-8">
+  <!-- Pros -->
+  <div class="p-6 bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded-lg">
+    <h3 class="flex items-center gap-2 font-semibold text-green-700 dark:text-green-400 mb-4">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      Pros
+    </h3>
+    <ul class="space-y-2">
+      {pros.map(pro => (
+        <li class="flex items-start gap-2 text-sm">
+          <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>{pro}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Cons -->
+  <div class="p-6 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg">
+    <h3 class="flex items-center gap-2 font-semibold text-red-700 dark:text-red-400 mb-4">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      Cons
+    </h3>
+    <ul class="space-y-2">
+      {cons.map(con => (
+        <li class="flex items-start gap-2 text-sm">
+          <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span>{con}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>

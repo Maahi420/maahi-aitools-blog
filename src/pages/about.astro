@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+import { siteConfig } from '../config/siteConfig';
+---
+
+<BaseLayout
+  title="About"
+  description="Learn more about AI Tools Review and our mission to help you find the best AI tools."
+>
+  <Navigation />
+
+  <main class="mx-auto max-w-3xl px-4 py-12">
+    <article class="prose prose-slate dark:prose-invert max-w-none">
+      <h1>About {siteConfig.name}</h1>
+
+      <p>
+        Welcome to {siteConfig.name}, your trusted source for in-depth reviews and comparisons
+        of the latest AI tools. Our mission is to help you make informed decisions when choosing
+        AI tools for your personal or business needs.
+      </p>
+
+      <h2>Our Mission</h2>
+      <p>
+        The AI tool landscape is evolving rapidly. Every day, new tools Launch with promises of
+        revolutionizing how we work, create, and communicate. But with so many options available,
+        it can be overwhelming to find the right tool for your specific needs.
+      </p>
+      <p>
+        We exist to cut through the noise and provide honest, detailed reviews that help you understand:
+      </p>
+      <ul>
+        <li>What each tool does and who it's best for</li>
+        <li>How it compares to alternatives in the market</li>
+        <li>Pricing structures and value for money</li>
+        <li>Key features and limitations</li>
+      </ul>
+
+      <h2>Our Review Process</h2>
+      <p>
+        Every review we publish follows a rigorous process:
+      </p>
+      <ol>
+        <li><strong>Hands-on testing:</strong> We use each tool extensively to understand its capabilities</li>
+        <li><strong>Feature comparison:</strong> We compare features against competitors</li>
+        <li><strong>Pricing analysis:</strong> We break down pricing and value</li>
+        <li><strong>User feedback:</strong> We consider real user experiences</li>
+        <li><strong>Regular updates:</strong> We revisit reviews to keep them current</li>
+      </ol>
+
+      <h2>E-E-A-T Principles</h2>
+      <p>
+        We follow Google's E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) guidelines:
+      </p>
+      <ul>
+        <li><strong>Experience:</strong> We actually use the tools we review</li>
+        <li><strong>Expertise:</strong> Our team has deep knowledge of AI and technology</li>
+        <li><strong>Authoritativeness:</strong> We cite sources and provide verifiable claims</li>
+        <li><strong>Trustworthiness:</strong> We disclose affiliations and maintain editorial independence</li>
+      </ul>
+
+      <h2>Contact Us</h2>
+      <p>
+        Have a tool you'd like us to review? Questions about our methodology?
+        Reach out at <a href="mailto:contact@aitools.pages.dev">{siteConfig.author.email}</a>
+      </p>
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+import AdUnits from '../components/AdUnits.astro';
+import { getPosts } from '../config/posts';
+import { siteConfig } from '../config/siteConfig';
+
+const latestPosts = getPosts().sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf()).slice(0, 6);
+---
+
+<BaseLayout
+  title={siteConfig.name}
+  description={siteConfig.description}
+>
+  <Navigation />
+
+  <!-- Hero Section -->
+  <section class="bg-slate-900 text-white py-16 md:py-24">
+    <div class="mx-auto max-w-4xl px-4 text-center">
+      <h1 class="text-3xl md:text-5xl font-bold mb-6">
+        AI Tools Reviews & Comparisons
+      </h1>
+      <p class="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+        {siteConfig.description}
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="/blog"
+          class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+        >
+          Latest Reviews
+        </a>
+        <a
+          href="/category/ai-chatbots"
+          class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors"
+        >
+          Browse Categories
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ad Unit - Under Hero -->
+  <div class="max-w-4xl px-4 -mt-8 relative z-10">
+    <AdUnits type="leaderboard" placement="content" />
+  </div>
+
+  <!-- Latest Reviews -->
+  <main class="mx-auto max-w-6xl px-4 py-12">
+    <section class="mb-12">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold">Latest Reviews</h2>
+        <a href="/blog" class="text-blue-500 hover:text-blue-600 font-medium">
+          View All
+        </a>
+      </div>
+
+      {latestPosts.length > 0 ? (
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {latestPosts.map(post => (
+            <a
+              href={`/blog/${post.slug}`}
+              class="group block bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              <div class="aspect-video bg-slate-100 dark:bg-slate-700 overflow-hidden">
+                {post.image ? (
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center text-slate-400">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div class="p-5">
+                <span class="inline-block px-2 py-1 text-xs font-medium text-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded-full mb-3">
+                  {post.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </span>
+                <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-500 transition-colors">
+                  {post.title}
+                </h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">
+                  {post.description}
+                </p>
+                <time class="block mt-3 text-sm text-slate-500">
+                  {post.pubDate.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </time>
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <p class="text-slate-500 mb-4">
+            No reviews published yet.
+          </p>
+          <a
+            href="/blog"
+            class="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+          >
+            Write First Review
+          </a>
+        </div>
+      )}
+    </section>
+
+    <!-- Categories Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold mb-8">Browse by Category</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {siteConfig.categories.map(category => (
+          <a
+            href={`/category/${category.slug}`}
+            class="p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 text-center hover:border-blue-500 hover:shadow-md transition-all"
+          >
+            <h3 class="font-semibold mb-1">{category.name}</h3>
+            <p class="text-sm text-slate-500">{category.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="bg-slate-100 dark:bg-slate-800 rounded-xl p-8 md:p-12 text-center">
+      <h2 class="text-2xl font-bold mb-4">Stay Updated</h2>
+      <p class="text-slate-600 dark:text-slate-400 mb-6 max-w-xl mx-auto">
+        Get the latest AI tool reviews and comparisons delivered to your inbox. No spam, unsubscribe anytime.
+      </p>
+      <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <input
+          type="email"
+          placeholder="your@email.com"
+          required
+          class="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-blue-500"
+        />
+        <button
+          type="submit"
+          class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+        >
+          Subscribe
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

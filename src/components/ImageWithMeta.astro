@@ -1,0 +1,40 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low';
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  loading = 'lazy',
+  fetchpriority,
+  class: className,
+} = Astro.props;
+
+const aspectRatio = width && height ? `${width}/${height}` : undefined;
+---
+
+<figure class:list={["my-6", className]}>
+  <img
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    decoding={loading === 'lazy' ? 'async' : 'sync'}
+    class="w-full rounded-lg"
+    style={aspectRatio ? { aspectRatio } : undefined}
+  />
+  <figcaption class="mt-2 text-sm text-slate-500 text-center">
+    {alt}
+  </figcaption>
+</figure>

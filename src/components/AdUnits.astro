@@ -1,0 +1,67 @@
+---
+interface Props {
+  slot?: string;
+  type?: 'banner' | 'square' | 'leaderboard' | 'popunder' | 'push';
+  placement?: 'header' | 'sidebar' | 'content' | 'footer';
+}
+
+const { slot, type = 'banner', placement = 'content' } = Astro.props;
+
+const sizes = {
+  banner: '300x250',
+  square: '250x250',
+  leaderboard: '728x90',
+};
+
+const adSizes = sizes[type] || sizes.banner;
+---
+
+{type !== 'popunder' && type !== 'push' && (
+  <div class="my-6 text-center">
+    <div
+      class:list={[
+        "mx-auto bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden",
+        placement === 'sidebar' ? 'sticky top-24' : '',
+      ]}
+      data-ad-slot={slot}
+      data-ad-type={type}
+    >
+      <div class:list={[
+        "flex items-center justify-center text-slate-500",
+        adSizes === '300x250' && "h-[250px] w-[300px]",
+        adSizes === '250x250' && "h-[250px] w-[250px]",
+        adSizes === '728x90' && "h-[90px] w-[728px]",
+      ]}>
+        <div class="text-center p-4">
+          <p class="text-sm font-medium">Advertisement</p>
+          <p class="text-xs text-slate-400 mt-1">{adSizes}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+{type === 'popunder' && (
+  <script is:inline define:vars={{ slot }}>
+    (function() {
+      // Pop-under implementation
+      // Replace with actual Adsterra/Monetag code
+      // This is a placeholder that opens in new window
+    })();
+  </script>
+)}
+
+{type === 'push' && (
+  <script is:inline define:vars={{ slot }}>
+    // Push notification permission request
+    // Replace with actual Adsterra/Monetag code
+  </script>
+)}
+
+<!--
+  To integrate Adsterra or Monetag:
+  1. Replace the placeholder divs above with your ad code
+  2. For pop-unders: Add their JavaScript tag to your site
+  3. For push notifications: Add their service worker
+  4. Update ads.txt in public/ folder
+-->

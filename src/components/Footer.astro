@@ -1,0 +1,101 @@
+---
+const currentYear = new Date().getFullYear();
+
+const footerLinks = {
+  categories: [
+    { href: '/category/ai-chatbots', label: 'AI Chatbots' },
+    { href: '/category/ai-writing', label: 'Writing Tools' },
+    { href: '/category/ai-image', label: 'Image Generators' },
+    { href: '/category/ai-video', label: 'Video Tools' },
+  ],
+  company: [
+    { href: '/about', label: 'About' },
+    { href: '/contact', label: 'Contact' },
+    { href: '/privacy', label: 'Privacy Policy' },
+    { href: '/terms', label: 'Terms of Service' },
+  ],
+};
+---
+
+<footer class="bg-slate-900 text-slate-300 mt-16">
+  <div class="mx-auto max-w-6xl px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Brand -->
+      <div class="md:col-span-1">
+        <a href="/" class="text-xl font-bold text-white hover:text-blue-400 transition-colors">
+          AI Tools Review
+        </a>
+        <p class="mt-4 text-sm text-slate-400">
+          Daily reviews and comparisons on the latest AI tools. Make informed decisions for your workflow.
+        </p>
+      </div>
+
+      <!-- Categories -->
+      <div>
+        <h3 class="text-white font-semibold mb-4">Categories</h3>
+        <ul class="space-y-2">
+          {footerLinks.categories.map(link => (
+            <li>
+              <a href={link.href} class="hover:text-blue-400 transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div>
+        <h3 class="text-white font-semibold mb-4">Company</h3>
+        <ul class="space-y-2">
+          {footerLinks.company.map(link => (
+            <li>
+              <a href={link.href} class="hover:text-blue-400 transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Subscribe -->
+      <div>
+        <h3 class="text-white font-semibold mb-4">Stay Updated</h3>
+        <p class="text-sm text-slate-400 mb-4">
+          Get the latest AI tool reviews delivered to your inbox.
+        </p>
+        <form class="flex gap-2">
+          <input
+            type="email"
+            placeholder="your@email.com"
+            class="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+          />
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+          >
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-sm text-slate-500">
+        &copy; {currentYear} AI Tools Review. All rights reserved.
+      </p>
+      <div class="flex items-center gap-4">
+        <a href="/rss.xml" class="text-slate-500 hover:text-orange-400 transition-colors" aria-label="RSS Feed">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/>
+          </svg>
+        </a>
+        <a href="https://twitter.com" class="text-slate-500 hover:text-blue-400 transition-colors" aria-label="Twitter">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

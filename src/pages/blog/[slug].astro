@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import AdUnits from '../../components/AdUnits.astro';
+import { getPostBySlug, getPosts } from '../../config/posts';
+import { siteConfig } from '../../config/siteConfig';
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+  const posts = getPosts();
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const contentHtml = marked(post.content);
+
+const relatedPosts = getPosts()
+  .filter(p => p.slug !== post.slug && p.category === post.category)
+  .slice(0, 3);
+---
+
+<BaseLayout
+  title={post.title}
+  description={post.description}
+  image={post.image}
+  type="article"
+  publishedTime={post.pubDate.toISOString()}
+  updatedTime={post.updatedDate?.toISOString()}
+  author={post.author}
+  section={post.category}
+>
+  <Navigation />
+
+  <main class="mx-auto max-w-4xl px-4 py-8">
+    <!-- Article Header -->
+    <header class="mb-8">
+      <a
+        href={`/category/${post.category}`}
+        class="inline-block px-3 py-1 text-sm font-medium text-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded-full mb-4"
+      >
+        {post.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+      </a>
+
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">{post.title}</h1>
+
+      <p class="text-lg text-slate-600 dark:text-slate-400 mb-4">{post.description}</p>
+
+      <div class="flex items-center gap-4 text-sm text-slate-500">
+        <time datetime={post.pubDate.toISOString()}>
+          {post.pubDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </time>
+        <span>by {post.author}</span>
+        {post.tags.length > 0 && (
+          <span class="flex gap-2">
+            {post.tags.map(tag => (
+              <a href={`/tags/${tag}`} class="hover:text-blue-500">#{tag}</a>
+            ))}
+          </span>
+        )}
+      </div>
+    </header>
+
+    <!-- Featured Image -->
+    {post.image && (
+      <figure class="mb-8">
+        <img
+          src={post.image}
+          alt={post.imageAlt || post.title}
+          width={800}
+          height={450}
+          fetchpriority="high"
+          class="w-full rounded-lg"
+        />
+        {post.imageAlt && (
+          <figcaption class="mt-2 text-sm text-slate-500 text-center">
+            {post.imageAlt}
+          </figcaption>
+        )}
+      </figure>
+    )}
+
+    <!-- Ad Unit - Top -->
+    <AdUnits type="banner" placement="header" />
+
+    <!-- Article Content -->
+    <article class="prose prose-slate dark:prose-invert max-w-none" set:html={contentHtml} />
+
+    <!-- Ad Unit - Bottom -->
+    <AdUnits type="banner" placement="footer" />
+
+    <!-- Tags -->
+    {post.tags.length > 0 && (
+      <div class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
+        <h3 class="text-sm font-semibold mb-3">Tags</h3>
+        <div class="flex flex-wrap gap-2">
+          {post.tags.map(tag => (
+            <a
+              href={`/tags/${tag}`}
+              class="px-3 py-1 text-sm bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Related Posts -->
+    {relatedPosts.length > 0 && (
+      <section class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+        <h2 class="text-xl font-bold mb-6">Related Reviews</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          {relatedPosts.map(related => (
+            <a href={`/blog/${related.slug}`} class="group">
+              <div class="aspect-video bg-slate-100 dark:bg-slate-800 rounded-lg mb-3 overflow-hidden">
+                {related.image ? (
+                  <img
+                    src={related.image}
+                    alt={related.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center text-slate-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <h3 class="font-semibold group-hover:text-blue-500 transition-colors">
+                {related.title}
+              </h3>
+              <p class="text-sm text-slate-500 mt-1">
+                {related.pubDate.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <Footer />
+</BaseLayout>
