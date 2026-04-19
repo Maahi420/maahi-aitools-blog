@@ -1,0 +1,135 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+  category: string;
+  rating?: number;
+  price?: string;
+  bestFor?: string;
+  pubDate: Date;
+  featured?: boolean;
+}
+
+const { slug, title, description, image, imageAlt, category, rating = 0, price, bestFor, pubDate, featured = false } = Astro.props;
+
+const categoryColors: Record<string, string> = {
+  'ai-chatbots': 'bg-blue-500',
+  'ai-writing': 'bg-emerald-500',
+  'ai-image': 'bg-purple-500',
+  'ai-video': 'bg-pink-500',
+  'ai-productivity': 'bg-amber-500',
+  'ai-coding': 'bg-cyan-500',
+};
+
+const categoryColor = categoryColors[category] || 'bg-slate-500';
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+const renderStars = (rating: number) => {
+  const stars = [];
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(true);
+  }
+  if (hasHalfStar) stars.push('half');
+
+  return stars;
+};
+---
+
+<article class:list={[
+  'group relative bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300',
+  featured ? 'ring-2 ring-blue-500 shadow-xl' : 'hover:shadow-lg hover:-translate-y-1'
+]}>
+  <a href={`/blog/${slug}`} class="block">
+    <div class="relative aspect-video bg-slate-100 dark:bg-slate-700 overflow-hidden">
+      {image ? (
+        <img
+          src={image}
+          alt={imageAlt || title}
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+        />
+      ) : (
+        <div class="w-full h-full flex items-center justify-center">
+          <svg class="w-16 h-16 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+      )}
+
+      <div class="absolute top-3 left-3 flex items-center gap-2">
+        <span class:list={['px-2.5 py-1 text-xs font-semibold text-white rounded-md shadow-sm', categoryColor]}>
+          {category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+        </span>
+        {featured && (
+          <span class="px-2.5 py-1 text-xs font-semibold bg-amber-500 text-white rounded-md shadow-sm">
+            Featured
+          </span>
+        )}
+      </div>
+
+      {rating > 0 && (
+        <div class="absolute top-3 right-3">
+          <div class="flex items-center gap-1 px-2.5 py-1.5 bg-white/95 dark:bg-slate-900/95 rounded-lg shadow-sm backdrop-blur-sm">
+            <svg class="w-4 h-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 9.162c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            <span class="text-sm font-bold text-slate-900 dark:text-white">{rating.toFixed(1)}</span>
+          </div>
+        </div>
+      )}
+    </div>
+
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        {bestFor && (
+          <span class="px-2 py-0.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded">
+            Best for: {bestFor}
+          </span>
+        )}
+        {price && (
+          <span class="px-2 py-0.5 text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded">
+            {price}
+          </span>
+        )}
+      </div>
+
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+        {title}
+      </h3>
+
+      <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
+        {description}
+      </p>
+
+      <div class="flex items-center justify-between">
+        <time class="text-xs text-slate-500 dark:text-slate-500">
+          {formatDate(pubDate)}
+        </time>
+        <span class="flex items-center gap-1 text-sm font-medium text-blue-500 dark:text-blue-400 group-hover:gap-2 transition-all">
+          Read Review
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

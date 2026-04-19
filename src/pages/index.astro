@@ -3,154 +3,331 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 import AdUnits from '../components/AdUnits.astro';
+import ReviewCard from '../components/ReviewCard.astro';
+import ComparisonTable from '../components/ComparisonTable.astro';
+import TrustSignals from '../components/TrustSignals.astro';
+import FeaturedCarousel from '../components/FeaturedCarousel.astro';
 import { getPosts } from '../config/posts';
 import { siteConfig } from '../config/siteConfig';
 
-const latestPosts = getPosts().sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf()).slice(0, 6);
+const allPosts = getPosts().filter(p => !p.draft);
+const sortedPosts = allPosts.sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
+
+const featuredPosts = sortedPosts.filter(p => p.featured).slice(0, 4);
+const latestPosts = sortedPosts.slice(0, 6);
+const trendingPosts = sortedPosts.slice(0, 3);
+
+const comparisonTools = [
+  {
+    name: 'ChatGPT',
+    rating: 4.8,
+    price: 'Free / $20/mo',
+    bestFor: 'General AI Chat',
+    features: ['Advanced reasoning', 'Code interpreter', 'DALL-E integration', 'GPT Store'],
+    pros: ['Best overall performance', 'Huge knowledge base', 'Active development', 'Plugin ecosystem'],
+    cons: ['Can hallucinate', 'Limited context window', 'Data concerns'],
+    link: '/blog/chatgpt-review',
+    cta: 'Read Review'
+  },
+  {
+    name: 'Claude',
+    rating: 4.7,
+    price: 'Free / $20/mo',
+    bestFor: 'Long Context',
+    features: ['200K context', 'Computer use', 'Art sonnets', 'Claude Code'],
+    pros: ['Long context handling', 'Better reasoning', 'Helpful coding', 'Clean output'],
+    cons: ['No image generation', 'Smaller knowledge base', 'Slower responses'],
+    link: '/blog/claude-review',
+    cta: 'Read Review'
+  },
+  {
+    name: 'Gemini',
+    rating: 4.5,
+    price: 'Free / $20/mo',
+    bestFor: 'Multimodal',
+    features: ['Native multimodal', '1M context', 'Deep Search', 'Veo integration'],
+    pros: ['Best for images/video', 'Fast responses', 'Google integration', 'Free tier strong'],
+    cons: ['Less creative', 'Inconsistent quality', 'Limited exports'],
+    link: '/blog/gemini-review',
+    cta: 'Read Review'
+  },
+];
 ---
 
 <BaseLayout
-  title={siteConfig.name}
+  title={`${siteConfig.name} - ${siteConfig.tagline}`}
   description={siteConfig.description}
 >
   <Navigation />
 
-  <!-- Hero Section -->
-  <section class="bg-slate-900 text-white py-16 md:py-24">
-    <div class="mx-auto max-w-4xl px-4 text-center">
-      <h1 class="text-3xl md:text-5xl font-bold mb-6">
-        AI Tools Reviews & Comparisons
-      </h1>
-      <p class="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-        {siteConfig.description}
-      </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <a
-          href="/blog"
-          class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
-        >
-          Latest Reviews
-        </a>
-        <a
-          href="/category/ai-chatbots"
-          class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors"
-        >
-          Browse Categories
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Ad Unit - Under Hero -->
-  <div class="max-w-4xl px-4 -mt-8 relative z-10">
-    <AdUnits type="leaderboard" placement="content" />
-  </div>
-
-  <!-- Latest Reviews -->
-  <main class="mx-auto max-w-6xl px-4 py-12">
-    <section class="mb-12">
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-bold">Latest Reviews</h2>
-        <a href="/blog" class="text-blue-500 hover:text-blue-600 font-medium">
-          View All
-        </a>
-      </div>
-
-      {latestPosts.length > 0 ? (
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {latestPosts.map(post => (
+  <main>
+    <section class="relative py-20 lg:py-28 overflow-hidden">
+      <div class="absolute inset-0 gradient-mesh opacity-50"></div>
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/20 rounded-full blur-[120px]"></div>
+      
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto">
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-6 bg-blue-50 dark:bg-blue-900/20 rounded-full">
+            <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+            <span class="text-sm font-medium text-blue-600 dark:text-blue-400">Updated Weekly with Latest AI Tool Reviews</span>
+          </div>
+          
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
+            Your Curated Guide to
+            <span class="text-gradient"> AI Excellence</span>
+          </h1>
+          
+          <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
+            {siteConfig.description}
+          </p>
+          
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
             <a
-              href={`/blog/${post.slug}`}
-              class="group block bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow"
+              href="/blog"
+              class="btn btn-primary text-lg px-8 py-3.5"
             >
-              <div class="aspect-video bg-slate-100 dark:bg-slate-700 overflow-hidden">
-                {post.image ? (
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center text-slate-400">
-                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                )}
+              Browse Reviews
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+            <a
+              href="/compare"
+              class="btn btn-secondary text-lg px-8 py-3.5"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Compare Tools
+            </a>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 dark:text-slate-400">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>{siteConfig.stats.toolsReviewed} Tools Reviewed</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>{siteConfig.stats.updatedWeekly}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>{siteConfig.stats.testedByHumans}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <TrustSignals />
+
+    {featuredPosts.length > 0 && (
+      <FeaturedCarousel
+        title="Editor's Picks"
+        tools={featuredPosts.map(p => ({
+          slug: p.slug,
+          title: p.title,
+          description: p.description,
+          image: p.image,
+          rating: p.rating,
+          category: p.category,
+          badge: p.featured ? 'Editor\'s Pick' : undefined,
+          verdict: p.verdict
+        }))}
+      />
+    )}
+
+    <section class="py-16 lg:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-10">
+          <div>
+            <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Top Rated This Week</h2>
+            <p class="text-slate-600 dark:text-slate-400">Our highest-rated AI tools based on latest reviews</p>
+          </div>
+          <a href="/blog" class="hidden md:inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium">
+            View All
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {latestPosts.slice(0, 3).map((post, index) => (
+            <ReviewCard
+              slug={post.slug}
+              title={post.title}
+              description={post.description}
+              image={post.image}
+              imageAlt={post.imageAlt}
+              category={post.category}
+              rating={post.rating}
+              price={post.pricing}
+              bestFor={post.bestFor}
+              pubDate={post.pubDate}
+              featured={index === 0}
+            />
+          ))}
+        </div>
+
+        <div class="mt-8 text-center md:hidden">
+          <a href="/blog" class="btn btn-secondary">
+            View All Reviews
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <ComparisonTable
+      title="Compare Top AI Chatbots"
+      subtitle="See how the leading AI chatbots stack up against each other"
+      tools={comparisonTools}
+      highlight={0}
+    />
+
+    <section class="py-16 lg:py-20 bg-slate-50 dark:bg-slate-800/50">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">Browse by Category</h2>
+          <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            Find the perfect AI tool for your specific needs
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {siteConfig.categories.map((category, index) => (
+            <a
+              href={`/category/${category.slug}`}
+              class:list={[
+                'group flex flex-col items-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-center transition-all duration-300',
+                'hover:border-blue-500 hover:shadow-lg hover:-translate-y-1'
+              ]}
+            >
+              <div class:list={[
+                'w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors',
+                index === 0 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 group-hover:bg-blue-500 group-hover:text-white' :
+                index === 1 ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white' :
+                index === 2 ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 group-hover:bg-purple-500 group-hover:text-white' :
+                index === 3 ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 group-hover:bg-pink-500 group-hover:text-white' :
+                index === 4 ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white' :
+                'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white'
+              ]}>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {category.slug === 'ai-chatbots' && <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />}
+                  {category.slug === 'ai-writing' && <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />}
+                  {category.slug === 'ai-image' && <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />}
+                  {category.slug === 'ai-video' && <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />}
+                  {category.slug === 'ai-productivity' && <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-13h-7z" />}
+                  {category.slug === 'ai-coding' && <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />}
+                </svg>
               </div>
-              <div class="p-5">
-                <span class="inline-block px-2 py-1 text-xs font-medium text-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded-full mb-3">
-                  {post.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                </span>
-                <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-500 transition-colors">
-                  {post.title}
-                </h3>
-                <p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">
-                  {post.description}
-                </p>
-                <time class="block mt-3 text-sm text-slate-500">
-                  {post.pubDate.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </time>
-              </div>
+              <h3 class="font-semibold text-slate-900 dark:text-white mb-1">{category.name}</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{category.description}</p>
             </a>
           ))}
         </div>
-      ) : (
-        <div class="text-center py-12">
-          <p class="text-slate-500 mb-4">
-            No reviews published yet.
-          </p>
-          <a
-            href="/blog"
-            class="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
-          >
-            Write First Review
-          </a>
-        </div>
-      )}
-    </section>
-
-    <!-- Categories Section -->
-    <section class="mb-12">
-      <h2 class="text-2xl font-bold mb-8">Browse by Category</h2>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {siteConfig.categories.map(category => (
-          <a
-            href={`/category/${category.slug}`}
-            class="p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 text-center hover:border-blue-500 hover:shadow-md transition-all"
-          >
-            <h3 class="font-semibold mb-1">{category.name}</h3>
-            <p class="text-sm text-slate-500">{category.description}</p>
-          </a>
-        ))}
       </div>
     </section>
 
-    <!-- Newsletter Section -->
-    <section class="bg-slate-100 dark:bg-slate-800 rounded-xl p-8 md:p-12 text-center">
-      <h2 class="text-2xl font-bold mb-4">Stay Updated</h2>
-      <p class="text-slate-600 dark:text-slate-400 mb-6 max-w-xl mx-auto">
-        Get the latest AI tool reviews and comparisons delivered to your inbox. No spam, unsubscribe anytime.
-      </p>
-      <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-        <input
-          type="email"
-          placeholder="your@email.com"
-          required
-          class="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-blue-500"
-        />
-        <button
-          type="submit"
-          class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
-        >
-          Subscribe
-        </button>
-      </form>
+    <section class="py-16 lg:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {latestPosts.slice(3, 6).map(post => (
+            <ReviewCard
+              slug={post.slug}
+              title={post.title}
+              description={post.description}
+              image={post.image}
+              imageAlt={post.imageAlt}
+              category={post.category}
+              rating={post.rating}
+              price={post.pricing}
+              bestFor={post.bestFor}
+              pubDate={post.pubDate}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 lg:py-20 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+      <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Stay Ahead of the Curve</h2>
+        <p class="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+          Get the latest AI tool reviews, comparisons, and insights delivered to your inbox. No spam, unsubscribe anytime.
+        </p>
+        <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <input
+            type="email"
+            placeholder="your@email.com"
+            required
+            class="flex-1 px-5 py-3.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-blue-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+          <button
+            type="submit"
+            class="px-8 py-3.5 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors"
+          >
+            Subscribe
+          </button>
+        </form>
+        <p class="mt-4 text-sm text-blue-200">
+          Join 10,000+ professionals getting weekly AI insights
+        </p>
+      </div>
+    </section>
+
+    <section class="py-16 lg:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">How We Test AI Tools</h2>
+            <p class="text-slate-600 dark:text-slate-400 mb-8">
+              Our review process is rigorous, unbiased, and transparent. We test every tool hands-on to bring you accurate, actionable insights.
+            </p>
+            <div class="space-y-4">
+              {siteConfig.methodology.criteria.map(criterion => (
+                <div class="flex items-center gap-4">
+                  <div class="w-16 h-16 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <span class="text-xl font-bold text-blue-600 dark:text-blue-400">{criterion.weight}%</span>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-slate-900 dark:text-white">{criterion.name}</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">{criterion.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Why Trust Our Reviews?</h3>
+            <ul class="space-y-4">
+              {siteConfig.trustSignals.map(signal => (
+                <li class="flex items-start gap-3">
+                  <div class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white">{signal.label}</span>
+                    <span class="text-slate-500 dark:text-slate-400"> - {signal.description}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 

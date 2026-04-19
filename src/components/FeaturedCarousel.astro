@@ -1,0 +1,148 @@
+---
+interface FeaturedTool {
+  slug: string;
+  title: string;
+  description: string;
+  image?: string;
+  rating?: number;
+  category: string;
+  badge?: string;
+  verdict?: string;
+}
+
+interface Props {
+  title?: string;
+  tools: FeaturedTool[];
+}
+
+const { title = "Editor's Picks", tools = [] } = Astro.props;
+---
+
+<section class="py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-900">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
+          {title}
+        </h2>
+        <p class="text-slate-600 dark:text-slate-400">
+          Our top recommendations for this week
+        </p>
+      </div>
+      <div class="hidden md:flex items-center gap-2">
+        <button id="prev-btn" class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 transition-colors" aria-label="Previous">
+          <svg class="w-5 h-5 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button id="next-btn" class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 transition-colors" aria-label="Next">
+          <svg class="w-5 h-5 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    {tools.length > 0 ? (
+      <div id="featured-carousel" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tools.map((tool, index) => (
+          <article class:list={[
+            'group relative bg-white dark:bg-slate-800 rounded-2xl overflow-hidden transition-all duration-300',
+            index === 0 ? 'md:col-span-2 md:row-span-2 ring-2 ring-blue-500 shadow-xl' : 'hover:shadow-lg hover:-translate-y-1'
+          ]}>
+            <a href={`/blog/${tool.slug}`} class="block">
+              <div class="relative aspect-[16/10] bg-slate-100 dark:bg-slate-700 overflow-hidden">
+                {tool.image ? (
+                  <img
+                    src={tool.image}
+                    alt={tool.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center">
+                    <svg class="w-20 h-20 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
+
+                <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                  {tool.badge && (
+                    <span class="px-3 py-1.5 text-sm font-semibold bg-blue-500 text-white rounded-lg shadow-lg">
+                      {tool.badge}
+                    </span>
+                  )}
+                  {tool.rating && (
+                    <span class="flex items-center gap-1 px-3 py-1.5 text-sm font-bold bg-white/95 dark:bg-slate-900/95 rounded-lg shadow-lg backdrop-blur-sm">
+                      <svg class="w-4 h-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 9.162c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      {tool.rating.toFixed(1)}
+                    </span>
+                  )}
+                </div>
+
+                <div class="absolute bottom-4 left-4 right-4">
+                  <span class="px-2.5 py-1 text-xs font-medium bg-slate-900/80 text-white rounded">
+                    {tool.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </span>
+                </div>
+              </div>
+
+              <div class="p-5 md:p-6">
+                <h3 class:list={[
+                  'font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-500 transition-colors',
+                  index === 0 ? 'text-2xl md:text-3xl' : 'text-xl'
+                ]}>
+                  {tool.title}
+                </h3>
+
+                {tool.verdict && (
+                  <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400 mb-3">
+                    {tool.verdict}
+                  </p>
+                )}
+
+                <p class:list={[
+                  'text-slate-600 dark:text-slate-400 mb-4',
+                  index === 0 ? 'text-lg line-clamp-3' : 'text-sm line-clamp-2'
+                ]}>
+                  {tool.description}
+                </p>
+
+                <span class="inline-flex items-center gap-1 text-sm font-medium text-blue-500 dark:text-blue-400 group-hover:gap-2 transition-all">
+                  Read Full Review
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </span>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-12">
+        <p class="text-slate-500 dark:text-slate-400">
+          No featured tools yet. Check back soon!
+        </p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -2,7 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
-import { getPostsByCategory } from '../../config/posts';
+import ReviewCard from '../../components/ReviewCard.astro';
+import ComparisonTable from '../../components/ComparisonTable.astro';
+import { getPostsByCategory, getPosts } from '../../config/posts';
 import { siteConfig } from '../../config/siteConfig';
 
 export async function getStaticPaths() {
@@ -14,74 +16,164 @@ export async function getStaticPaths() {
 
 const { category } = Astro.props;
 const categoryPosts = getPostsByCategory(category.slug).sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
+const allPosts = getPosts();
+const categoryPostsWithRatings = categoryPosts.filter(p => p.rating);
+
+const topRated = categoryPostsWithRatings.slice(0, 3);
+const latestPosts = categoryPosts.slice(0, 6);
+
+const categoryTools = [...new Set(categoryPosts.map(p => p.title))].slice(0, 3).map((name, i) => {
+  const post = categoryPosts.find(p => p.title === name);
+  return {
+    name,
+    rating: post?.rating || 4.0,
+    price: post?.pricing || 'Varies',
+    bestFor: post?.bestFor || 'General use',
+    features: post?.features || ['Standard features'],
+    pros: post?.pros || ['Good performance', 'User friendly'],
+    cons: post?.cons || ['Room for improvement'],
+    link: post ? `/blog/${post.slug}` : '#',
+    cta: 'View Review'
+  };
+});
 ---
 
 <BaseLayout
-  title={category.name}
+  title={`${category.name} - ${siteConfig.name}`}
   description={category.description}
 >
   <Navigation />
 
-  <main class="mx-auto max-w-6xl px-4 py-12">
-    <header class="mb-12">
-      <h1 class="text-3xl md:text-4xl font-bold mb-4">{category.name}</h1>
-      <p class="text-lg text-slate-600 dark:text-slate-400">
-        {category.description}
-      </p>
-    </header>
+  <main>
+    <section class="py-12 lg:py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-900">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="px-3 py-1 text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full">
+              {categoryPosts.length} {categoryPosts.length === 1 ? 'Tool' : 'Tools'}
+            </span>
+          </div>
+          <h1 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+            {category.name}
+          </h1>
+          <p class="text-lg text-slate-600 dark:text-slate-400 mb-8">
+            {category.description}
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="#reviews" class="btn btn-primary">
+              Browse Reviews
+            </a>
+            <a href="/compare" class="btn btn-secondary">
+              Compare Tools
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    {categoryPosts.length > 0 ? (
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {categoryPosts.map(post => (
-          <a
-            href={`/blog/${post.slug}`}
-            class="group block bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow"
-          >
-            <div class="aspect-video bg-slate-100 dark:bg-slate-700 overflow-hidden">
-              {post.image ? (
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
-              ) : (
-                <div class="w-full h-full flex items-center justify-center text-slate-400">
-                  <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              )}
-            </div>
-            <div class="p-5">
-              <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-500 transition-colors">
-                {post.title}
-              </h3>
-              <p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">
-                {post.description}
-              </p>
-              <time class="block mt-3 text-sm text-slate-500">
-                {post.pubDate.toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
-              </time>
-            </div>
-          </a>
-        ))}
-      </div>
-    ) : (
-      <div class="text-center py-12 bg-slate-50 dark:bg-slate-800 rounded-lg">
-        <p class="text-slate-500 mb-4">No reviews in this category yet.</p>
-        <a
-          href="/blog"
-          class="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg"
-        >
-          Browse All Reviews
-        </a>
-      </div>
+    {topRated.length > 0 && (
+      <section class="py-12 lg:py-16">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between mb-8">
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Top Picks</h2>
+            <a href="#reviews" class="text-blue-500 hover:text-blue-600 font-medium">
+              View All →
+            </a>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-6">
+            {topRated.map((post, index) => (
+              <ReviewCard
+                slug={post.slug}
+                title={post.title}
+                description={post.description}
+                image={post.image}
+                imageAlt={post.imageAlt}
+                category={post.category}
+                rating={post.rating}
+                price={post.pricing}
+                bestFor={post.bestFor}
+                pubDate={post.pubDate}
+                featured={index === 0}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
     )}
+
+    {categoryTools.length >= 2 && (
+      <ComparisonTable
+        title={`Compare ${category.name}`}
+        subtitle={`See how the top ${category.name.toLowerCase()} stack up against each other`}
+        tools={categoryTools}
+        highlight={0}
+      />
+    )}
+
+    <section id="reviews" class="py-12 lg:py-16 bg-slate-50 dark:bg-slate-800/50">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Latest Reviews</h2>
+          <a href="/blog" class="text-blue-500 hover:text-blue-600 font-medium">
+            All Reviews →
+          </a>
+        </div>
+
+        {latestPosts.length > 0 ? (
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {latestPosts.map(post => (
+              <ReviewCard
+                slug={post.slug}
+                title={post.title}
+                description={post.description}
+                image={post.image}
+                imageAlt={post.imageAlt}
+                category={post.category}
+                rating={post.rating}
+                price={post.pricing}
+                bestFor={post.bestFor}
+                pubDate={post.pubDate}
+              />
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-12">
+            <p class="text-slate-500 dark:text-slate-400 mb-4">No reviews in this category yet.</p>
+            <a href="/blog" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors">
+              Browse All Reviews
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section class="py-12 lg:py-16">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 md:p-12 shadow-lg">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Looking for something specific?</h2>
+          <p class="text-slate-600 dark:text-slate-400 mb-8 max-w-2xl">
+            Can't find what you're looking for? Check out our other categories or compare tools across different types.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            {siteConfig.categories.filter(c => c.slug !== category.slug).slice(0, 4).map(cat => (
+              <a
+                href={`/category/${cat.slug}`}
+                class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-blue-500 hover:text-white transition-colors"
+              >
+                {cat.name}
+              </a>
+            ))}
+            <a
+              href="/compare"
+              class="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors"
+            >
+              Compare All
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <Footer />
