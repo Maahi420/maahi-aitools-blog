@@ -1,0 +1,113 @@
+---
+import { siteConfig } from '../config/siteConfig';
+
+interface Props {
+  type: 'article' | 'faq' | 'breadcrumb' | 'organization';
+  data?: any;
+}
+
+const { type, data } = Astro.props;
+
+const siteUrl = siteConfig.url;
+
+const getSchema = () => {
+  if (type === 'article' && data) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "headline": data.title,
+      "description": data.description,
+      "image": data.image ? (data.image.startsWith('http') ? data.image : `${siteUrl}${data.image}`) : `${siteUrl}/images/og-default.jpg`,
+      "datePublished": data.pubDate,
+      "dateModified": data.updatedDate || data.pubDate,
+      "author": {
+        "@type": "Person",
+        "name": data.author || siteConfig.author.name,
+        "url": `${siteUrl}/about`
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": siteConfig.name,
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${siteUrl}/favicon.svg`
+        }
+      },
+      "itemReviewed": {
+        "@type": "SoftwareApplication",
+        "name": data.title.replace(' Review', ''),
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": data.rating || "4",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": data.description,
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `${siteUrl}/blog/${data.slug}`
+      }
+    };
+  }
+
+  if (type === 'faq' && data) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": data.items.map((item: any, index: number) => ({
+        "@type": "Question",
+        "name": item.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.a,
+          "upvoteCount": index,
+          "url": `${siteUrl}/blog/${data.slug}#faq-${index}`
+        }
+      }))
+    };
+  }
+
+  if (type === 'breadcrumb' && data) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": data.items.map((item: any, index: number) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": item.name,
+        "item": item.url
+      }))
+    };
+  }
+
+  if (type === 'organization') {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": siteConfig.name,
+      "url": siteUrl,
+      "logo": `${siteUrl}/favicon.svg`,
+      "description": siteConfig.description,
+      "sameAs": [
+        siteConfig.social.twitter ? `https://twitter.com/${siteConfig.social.twitter.replace('@', '')}` : null
+      ].filter(Boolean),
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": siteConfig.author.email,
+        "contactType": "customer service"
+      }
+    };
+  }
+
+  return null;
+};
+
+const schema = getSchema();
+---
+
+{schema && (
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+)}

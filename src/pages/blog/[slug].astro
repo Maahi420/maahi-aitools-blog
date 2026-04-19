@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
+import SchemaOrg from '../../components/SchemaOrg.astro';
 import { getPostBySlug, getPosts, getPostsByCategory } from '../../config/posts';
 import { siteConfig } from '../../config/siteConfig';
 
@@ -56,6 +57,14 @@ const sectionComponents: Record<string, any> = {
   verdict: SectionVerdict,
   faq: SectionFaq,
 };
+
+const faqSection = post.sections.find(s => s.type === 'faq');
+const breadcrumbItems = [
+  { name: 'Home', url: siteConfig.url },
+  { name: 'Reviews', url: `${siteConfig.url}/blog` },
+  { name: post.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()), url: `${siteConfig.url}/category/${post.category}` },
+  { name: post.title, url: `${siteConfig.url}/blog/${post.slug}` }
+];
 ---
 
 <BaseLayout
@@ -68,9 +77,46 @@ const sectionComponents: Record<string, any> = {
   author={post.author}
   section={post.category}
 >
+  <SchemaOrg type="article" data={post} />
+  {faqSection && <SchemaOrg type="faq" data={{ items: faqSection.items, slug: post.slug }} />}
+  <SchemaOrg type="breadcrumb" data={{ items: breadcrumbItems }} />
+  <SchemaOrg type="organization" />
+
   <Navigation />
 
   <main>
+    <nav class="py-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <ol class="flex items-center gap-2 text-sm" itemscope itemtype="https://schema.org/BreadcrumbList">
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="/" class="text-slate-500 hover:text-blue-500" itemprop="item">
+              <span itemprop="name">Home</span>
+            </a>
+            <meta itemprop="position" content="1" />
+          </li>
+          <li class="text-slate-400">/</li>
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="/blog" class="text-slate-500 hover:text-blue-500" itemprop="item">
+              <span itemprop="name">Reviews</span>
+            </a>
+            <meta itemprop="position" content="2" />
+          </li>
+          <li class="text-slate-400">/</li>
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href={`/category/${post.category}`} class="text-slate-500 hover:text-blue-500" itemprop="item">
+              <span itemprop="name">{post.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+            </a>
+            <meta itemprop="position" content="3" />
+          </li>
+          <li class="text-slate-400">/</li>
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span class="text-slate-900 dark:text-white font-medium" itemprop="name">{post.title}</span>
+            <meta itemprop="position" content="4" />
+          </li>
+        </ol>
+      </div>
+    </nav>
+
     {post.sections.map((section) => {
       const Component = sectionComponents[section.type];
       if (!Component) return null;
@@ -128,11 +174,28 @@ const sectionComponents: Record<string, any> = {
       }
 
       if (section.type === 'faq') {
-        return <Component title={section.title} items={section.items} />;
+        return <Component title={section.title} items={section.items} id="faq" />;
       }
 
       return null;
     })}
+
+    <section class="py-12 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+      <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl">
+            {post.author.split(' ').map(n => n[0]).join('').substring(0, 2)}
+          </div>
+          <div>
+            <p class="font-semibold text-slate-900 dark:text-white">Written by {post.author}</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">AI Tools Review Expert</p>
+            <p class="text-xs text-slate-400 mt-1">
+              Last updated: {post.updatedDate ? post.updatedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : post.pubDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
     {relatedPosts.length > 0 && (
       <section class="py-12 lg:py-16 bg-slate-50 dark:bg-slate-800/50">

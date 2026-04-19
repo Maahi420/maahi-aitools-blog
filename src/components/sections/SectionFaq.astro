@@ -7,35 +7,45 @@ interface FaqItem {
 interface Props {
   title?: string;
   items: FaqItem[];
+  id?: string;
 }
 
-const { title = "Frequently Asked Questions", items } = Astro.props;
+const { title = "Frequently Asked Questions", items, id } = Astro.props;
 ---
 
-<section class="py-12 lg:py-16 bg-slate-50 dark:bg-slate-800/50">
+<section class="py-12 lg:py-16 bg-slate-50 dark:bg-slate-800/50" id={id}>
   <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-    <h2 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-8 text-center">
-      {title}
-    </h2>
+    <div class="text-center mb-8">
+      <h2 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+        {title}
+      </h2>
+      <p class="text-slate-600 dark:text-slate-400">
+        Quick answers to common questions about this AI tool
+      </p>
+    </div>
 
     <div class="space-y-4">
       {items.map((item, index) => (
-        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-          <details class="group">
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden" itemscope itemtype="https://schema.org/Question">
+          <details class="group" open={index === 0}>
             <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
-              <span class="font-semibold text-slate-900 dark:text-white pr-4">
+              <span class="font-semibold text-slate-900 dark:text-white pr-4" itemprop="name">
                 {item.q}
               </span>
-              <svg class="w-5 h-5 text-slate-500 dark:text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-slate-500 dark:text-slate-400 group-open:rotate-180 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
             </summary>
-            <div class="px-5 pb-5 text-slate-600 dark:text-slate-400">
-              {item.a}
+            <div class="px-5 pb-5 text-slate-600 dark:text-slate-400" itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+              <p itemprop="text">{item.a}</p>
             </div>
           </details>
         </div>
       ))}
     </div>
+
+    <p class="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+      Still have questions? <a href="/contact" class="text-blue-500 hover:text-blue-600 font-medium">Contact us</a>
+    </p>
   </div>
 </section>

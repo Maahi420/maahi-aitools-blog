@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
 import AdUnits from '../components/AdUnits.astro';
 import ReviewCard from '../components/ReviewCard.astro';
 import ComparisonTable from '../components/ComparisonTable.astro';
@@ -58,6 +59,12 @@ const comparisonTools = [
   title={`${siteConfig.name} - ${siteConfig.tagline}`}
   description={siteConfig.description}
 >
+  <SchemaOrg type="organization" />
+  <SchemaOrg type="breadcrumb" data={{ items: [
+    { name: 'Home', url: siteConfig.url },
+    { name: 'AI Tools Reviews', url: `${siteConfig.url}/blog` }
+  ]}} />
+
   <Navigation />
 
   <main>
